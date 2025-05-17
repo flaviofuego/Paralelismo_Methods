@@ -1,0 +1,94 @@
+{
+    "matrix": [
+        {
+            "N": 100,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Time": 0.316354,
+            "Timestamp": 1747454539.7011414
+        },
+        {
+            "N": 500,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Time": 35.821334,
+            "Timestamp": 1747454575.7298207
+        },
+        {
+            "N": 100,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Time": 0.154238,
+            "Timestamp": 1747454576.144004
+        },
+        {
+            "N": 100,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Time": 0.082217,
+            "Timestamp": 1747454576.5104513
+        },
+        {
+            "N": 500,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Time": 19.263945,
+            "Timestamp": 1747454596.0466158
+        },
+        {
+            "N": 500,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Time": 9.687493,
+            "Timestamp": 1747454606.0231774
+        },
+        {
+            "N": 100,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Time": 1.625602,
+            "Timestamp": 1747454608.3168602
+        },
+        {
+            "N": 500,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Time": 0.104528,
+            "Timestamp": 1747454609.1029897
+        }
+    ],
+    "prime": [
+        {
+            "D": 3,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Count": 143,
+            "Time": 0.000317,
+            "Timestamp": 1747454609.230445
+        },
+        {
+            "D": 2,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Count": 21,
+            "Time": 0.010319,
+            "Timestamp": 1747454609.5007243
+        },
+        {
+            "D": 2,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Count": 21,
+            "Time": 0.24097,
+            "Timestamp": 1747454610.6637075
+        },
+        {
+            "D": 3,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Count": 143,
+            "Time": 0.237286,
+            "Timestamp": 1747454611.5789387
+        }
+    ]
+}
