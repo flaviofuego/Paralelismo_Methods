@@ -2120,208 +2120,479 @@ with tab3:
                             st.info("🔍 Análisis: La relación entre GPU y MPI se mantiene estable en diferentes tamaños de problema.")
         
         # Análisis para conteo de primos - Implementación similar con las mismas verificaciones
+        # Sección para análisis de conteo de primos
         elif analysis_type == "Conteo de Números Primos" and not df_prime.empty:
-            st.subheader("Análisis de Conteo de Números Primos")
+            # Crear pestañas para organizar mejor el análisis
+            prime_tabs = st.tabs(["Resumen General", "Escalabilidad", "Comparativa", "Complejidad"])
             
-            # Análisis 1: Mejor implementación por número de dígitos
-            st.markdown("### Mejor Implementación por Número de Dígitos")
-            
-            # Encontrar la mejor implementación para cada D
-            unique_ds = sorted(df_prime["D"].unique())
-            best_implementations = []
-            
-            for d in unique_ds:
-                df_d = df_prime[df_prime["D"] == d]
-                df_d = df_d[df_d["Time"] > 0]  # Filtrar tiempos válidos
+            with prime_tabs[0]:
+                st.subheader("Resumen de Rendimiento para Conteo de Primos")
                 
-                if not df_d.empty:
-                    best_idx = df_d["Time"].idxmin()
-                    if best_idx is not None:
-                        best_row = df_d.loc[best_idx]
-                        
-                        # Calcular speedup vs secuencial si existe
-                        speedup = "N/A"
-                        if "Secuencial" in df_d["Implementation"].values:
-                            seq_data = df_d[df_d["Implementation"] == "Secuencial"]
-                            if not seq_data.empty:
-                                seq_time = seq_data["Time"].values[0]
-                                if seq_time > 0 and best_row["Time"] > 0:
-                                    speedup = seq_time / best_row["Time"]
-                        
-                        best_implementations.append({
-                        "D": d,
-                        "Count": str(best_row["Count"]) if "Count" in best_row else "N/A",
-                        "Best Implementation": best_row["Implementation"],
-                        "Workers (if MPI)": str(best_row["Workers"]) if best_row["Implementation"] == "MPI" else "N/A",
-                        "Time (s)": best_row["Time"],
-                        "Speedup vs Sequential": str(speedup) if isinstance(speedup, (int, float)) else speedup
-                    })
-            
-            if best_implementations:
-                st.table(pd.DataFrame(best_implementations))
-            
-                # Análisis general de tendencias
-                implementations_count = {}
-                for impl in best_implementations:
-                    impl_name = impl["Best Implementation"]
-                    if impl_name in implementations_count:
-                        implementations_count[impl_name] += 1
-                    else:
-                        implementations_count[impl_name] = 1
-                
-                if implementations_count:  # Verificar que existan datos
-                    best_overall = max(implementations_count.items(), key=lambda x: x[1])
+                # Mejor implementación por número de dígitos (tabla más compacta)
+                with st.container():
+                    st.markdown("### Mejor Implementación por Número de Dígitos")
                     
-                    st.info(f"🔍 Análisis General: La implementación **{best_overall[0]}** es la más rápida para la mayoría de los números de dígitos probados ({best_overall[1]} de {len(best_implementations)} casos).")
-            
-            # Análisis 2: Escalabilidad de MPI
-            if "MPI" in df_prime["Implementation"].values:
-                st.markdown("### Análisis de Escalabilidad de MPI")
-                
-                # Para cada D, analizar cómo escala con el número de trabajadores
-                for d in unique_ds:
-                    mpi_d = df_prime[(df_prime["Implementation"] == "MPI") & (df_prime["D"] == d) & (df_prime["Time"] > 0)]
+                    # Encontrar la mejor implementación para cada D
+                    unique_ds = sorted(df_prime["D"].unique())
+                    best_implementations = []
                     
-                    if len(mpi_d) > 1:  # Si hay más de un número de trabajadores con tiempo válido
-                        workers = sorted(mpi_d["Workers"].unique())
+                    for d in unique_ds:
+                        df_d = df_prime[df_prime["D"] == d]
+                        df_d = df_d[df_d["Time"] > 0]  # Filtrar tiempos válidos
                         
-                        # Calcular eficiencia
-                        base_time = mpi_d[mpi_d["Workers"] == min(workers)]["Time"].values[0]
-                        efficiencies = []
+                        if not df_d.empty:
+                            best_idx = df_d["Time"].idxmin()
+                            if best_idx is not None:
+                                best_row = df_d.loc[best_idx]
+                                
+                                # Calcular speedup vs secuencial si existe
+                                speedup = "N/A"
+                                if "Secuencial" in df_d["Implementation"].values:
+                                    seq_data = df_d[df_d["Implementation"] == "Secuencial"]
+                                    if not seq_data.empty:
+                                        seq_time = seq_data["Time"].values[0]
+                                        if seq_time > 0 and best_row["Time"] > 0:
+                                            speedup = seq_time / best_row["Time"]
+                                
+                                best_implementations.append({
+                                    "D": d,
+                                    "Count": str(best_row["Count"]) if "Count" in best_row else "N/A",
+                                    "Best Implementation": best_row["Implementation"],
+                                    "Workers (if MPI)": str(best_row["Workers"]) if best_row["Implementation"] == "MPI" else "N/A",
+                                    "Time (s)": best_row["Time"],
+                                    "Speedup vs Sequential": str(speedup) if isinstance(speedup, (int, float)) else speedup
+                                })
+                    
+                    if best_implementations:
+                        # Usar st.dataframe en lugar de st.table para mejor manejo de espacio
+                        st.dataframe(pd.DataFrame(best_implementations), use_container_width=True)
                         
-                        for w in workers:
-                            time_w = mpi_d[mpi_d["Workers"] == w]["Time"].values[0]
-                            # Verificar que el tiempo es válido
-                            if time_w > 0:
-                                # Eficiencia = (tiempo con 1 trabajador) / (tiempo con w trabajadores * w / min_workers)
-                                efficiency = (base_time) / (time_w * (w / min(workers)))
-                                efficiencies.append(efficiency)
+                        # Análisis general de tendencias
+                        implementations_count = {}
+                        for impl in best_implementations:
+                            impl_name = impl["Best Implementation"]
+                            if impl_name in implementations_count:
+                                implementations_count[impl_name] += 1
                             else:
-                                efficiencies.append(0)  # Valor predeterminado para tiempos inválidos
+                                implementations_count[impl_name] = 1
                         
-                        efficiency_df = pd.DataFrame({
-                            "Workers": workers,
-                            "Efficiency": efficiencies
-                        })
+                        if implementations_count:  # Verificar que existan datos
+                            best_overall = max(implementations_count.items(), key=lambda x: x[1])
+                            
+                            st.info(f"🔍 Análisis General: La implementación **{best_overall[0]}** es la más rápida para la mayoría de los números de dígitos probados ({best_overall[1]} de {len(best_implementations)} casos).")
+                    
+                    # Agregar métricas clave en columnas
+                    if best_implementations:
+                        col1, col2, col3 = st.columns(3)
                         
-                        st.markdown(f"#### D = {d}")
-                        col1, col2 = st.columns(2)
+                        # Máximo speedup observado
+                        best_speedup = 0
+                        best_speedup_config = {}
+                        
+                        for impl in best_implementations:
+                            if impl["Speedup vs Sequential"] != "N/A":
+                                try:
+                                    speedup = float(impl["Speedup vs Sequential"])
+                                    if speedup > best_speedup:
+                                        best_speedup = speedup
+                                        best_speedup_config = {
+                                            "D": impl["D"],
+                                            "Implementation": impl["Best Implementation"]
+                                        }
+                                except:
+                                    pass
                         
                         with col1:
-                            if efficiencies:  # Verificar que hay datos válidos
-                                best_workers_idx = efficiencies.index(max(efficiencies))
-                                st.metric(
-                                    "Mejor número de trabajadores", 
-                                    workers[best_workers_idx],
-                                    f"Eficiencia: {max(efficiencies):.2f}"
-                                )
+                            st.metric(
+                                "Implementación más rápida",
+                                best_overall[0],
+                                f"{best_overall[1]}/{len(best_implementations)} casos"
+                            )
                         
                         with col2:
-                            if efficiencies and max(efficiencies) > 0:  # Verificar que hay datos válidos
-                                if max(efficiencies) < 0.7:
-                                    st.warning("Baja eficiencia de escalabilidad")
-                                elif max(efficiencies) < 0.9:
-                                    st.info("Escalabilidad moderada")
-                                else:
-                                    st.success("Excelente escalabilidad")
+                            if best_speedup > 0:
+                                st.metric(
+                                    "Máximo Speedup",
+                                    f"{best_speedup:.2f}x",
+                                    f"Con D={best_speedup_config['D']}"
+                                )
                         
-                        # Gráfico de eficiencia
-                        fig = px.line(
-                            efficiency_df, 
-                            x="Workers", 
-                            y="Efficiency",
-                            markers=True,
-                            title=f"Eficiencia de Escalabilidad para D={d}",
-                            labels={"Workers": "Número de Trabajadores", "Efficiency": "Eficiencia"}
-                        )
-                        fig.update_yaxes(range=[0, 1.1])
-                        fig.update_layout(height=400)
-                        st.plotly_chart(fig, use_container_width=True)
-            
-            # Análisis 3: Comparación GPU vs Mejor MPI
-            if "GPU" in df_prime["Implementation"].values and "MPI" in df_prime["Implementation"].values:
-                st.markdown("### Comparación GPU vs Mejor MPI")
-                
-                comparison_data = []
-                
-                for d in unique_ds:
-                    d_data = df_prime[df_prime["D"] == d]
-                    
-                    if "GPU" in d_data["Implementation"].values and "MPI" in d_data["Implementation"].values:
-                        # Obtener tiempo de GPU filtrando valores válidos
-                        gpu_data = d_data[(d_data["Implementation"] == "GPU") & (d_data["Time"] > 0)]
-                        if not gpu_data.empty:
-                            gpu_time = gpu_data["Time"].values[0]
+                        with col3:
+                            # Encontrar el conteo correcto
+                            expected_counts = {1: 4, 2: 21, 3: 143, 4: 1061, 5: 8363}
+                            correct_counts = sum(1 for impl in best_implementations if int(impl["D"]) in expected_counts and str(expected_counts[int(impl["D"])]) == impl["Count"])
                             
-                            # Encontrar el mejor tiempo de MPI, filtrando valores válidos
-                            mpi_data = d_data[(d_data["Implementation"] == "MPI") & (d_data["Time"] > 0)]
-                            if not mpi_data.empty:
-                                best_mpi_idx = mpi_data["Time"].idxmin()
-                                best_mpi_time = mpi_data.loc[best_mpi_idx]["Time"]
-                                best_mpi_workers = mpi_data.loc[best_mpi_idx]["Workers"]
+                            st.metric(
+                                "Precisión de Conteo",
+                                f"{correct_counts}/{len([d for d in unique_ds if d in expected_counts])}"
+                            )
+            
+            with prime_tabs[1]:
+                st.subheader("Análisis de Escalabilidad de MPI")
+                
+                # Para cada D, analizar cómo escala con el número de trabajadores
+                if "MPI" in df_prime["Implementation"].values:
+                    # Selección de D para análisis
+                    d_options = sorted(df_prime[df_prime["Implementation"] == "MPI"]["D"].unique())
+                    if d_options:
+                        selected_d = st.selectbox(
+                            "Seleccione el número de dígitos para analizar:",
+                            d_options,
+                            index=0
+                        )
+                        
+                        mpi_d = df_prime[(df_prime["Implementation"] == "MPI") & (df_prime["D"] == selected_d) & (df_prime["Time"] > 0)]
+                        
+                        if len(mpi_d) > 1:  # Si hay más de un número de trabajadores con tiempo válido
+                            workers = sorted(mpi_d["Workers"].unique())
+                            
+                            # Calcular eficiencia
+                            base_time = mpi_d[mpi_d["Workers"] == min(workers)]["Time"].values[0]
+                            efficiencies = []
+                            
+                            for w in workers:
+                                time_w = mpi_d[mpi_d["Workers"] == w]["Time"].values[0]
+                                # Verificar que el tiempo es válido
+                                if time_w > 0:
+                                    # Eficiencia = (tiempo con 1 trabajador) / (tiempo con w trabajadores * w / min_workers)
+                                    efficiency = (base_time) / (time_w * (w / min(workers)))
+                                    efficiencies.append(efficiency)
+                                else:
+                                    efficiencies.append(0)  # Valor predeterminado para tiempos inválidos
+                            
+                            efficiency_df = pd.DataFrame({
+                                "Workers": workers,
+                                "Efficiency": efficiencies,
+                                "Time": [mpi_d[mpi_d["Workers"] == w]["Time"].values[0] for w in workers]
+                            })
+                            
+                            # Mostrar gráficos lado a lado
+                            col1, col2 = st.columns(2)
+                            
+                            with col1:
+                                # Gráfico de tiempo vs workers
+                                fig_time = px.line(
+                                    efficiency_df, 
+                                    x="Workers", 
+                                    y="Time",
+                                    markers=True,
+                                    title=f"Tiempo vs Trabajadores (D={selected_d})",
+                                    labels={"Workers": "Número de Trabajadores", "Time": "Tiempo (s)"}
+                                )
+                                fig_time.update_layout(height=350)
+                                st.plotly_chart(fig_time, use_container_width=True)
+                            
+                            with col2:
+                                # Gráfico de eficiencia
+                                fig_eff = px.line(
+                                    efficiency_df, 
+                                    x="Workers", 
+                                    y="Efficiency",
+                                    markers=True,
+                                    title=f"Eficiencia de Escalabilidad (D={selected_d})",
+                                    labels={"Workers": "Número de Trabajadores", "Efficiency": "Eficiencia"}
+                                )
+                                fig_eff.update_yaxes(range=[0, 1.1])
+                                fig_eff.update_layout(height=350)
+                                st.plotly_chart(fig_eff, use_container_width=True)
+                            
+                            # Análisis de eficiencia
+                            if efficiencies:  # Verificar que hay datos válidos
+                                best_workers_idx = efficiencies.index(max(efficiencies))
+                                best_efficiency = max(efficiencies)
+                                best_workers = workers[best_workers_idx]
                                 
-                                # Calcular ratio solo si ambos tiempos son válidos
-                                if gpu_time > 0 and best_mpi_time > 0:
-                                    gpu_mpi_ratio = gpu_time / best_mpi_time
+                                # Crear indicador de eficiencia
+                                fig = go.Figure(go.Indicator(
+                                    mode = "gauge+number",
+                                    value = best_efficiency,
+                                    title = {'text': f"Mejor Eficiencia (con {best_workers} trabajadores)"},
+                                    gauge = {
+                                        'axis': {'range': [0, 1], 'tickwidth': 1},
+                                        'bar': {'color': "darkblue"},
+                                        'steps' : [
+                                            {'range': [0, 0.7], 'color': "lightcoral"},
+                                            {'range': [0.7, 0.9], 'color': "lightyellow"},
+                                            {'range': [0.9, 1], 'color': "lightgreen"}
+                                        ],
+                                        'threshold': {
+                                            'line': {'color': "red", 'width': 4},
+                                            'thickness': 0.75,
+                                            'value': best_efficiency
+                                        }
+                                    }
+                                ))
+                                
+                                fig.update_layout(height=250)
+                                st.plotly_chart(fig, use_container_width=True)
+                                
+                                # Análisis textual
+                                if best_efficiency < 0.7:
+                                    st.warning("⚠️ **Baja eficiencia de escalabilidad**: Posible sobrecarga de comunicación o desbalance de carga en el conteo de primos.")
+                                elif best_efficiency < 0.9:
+                                    st.info("ℹ️ **Escalabilidad moderada**: Rendimiento aceptable pero no óptimo para el conteo de primos.")
+                                else:
+                                    st.success("✅ **Excelente escalabilidad**: La implementación MPI aprovecha eficientemente los recursos paralelos para el conteo de primos.")
+                        else:
+                            st.info("Se necesitan al menos dos configuraciones diferentes de trabajadores MPI para analizar la escalabilidad.")
+                    else:
+                        st.info("No hay datos de MPI disponibles para el análisis de escalabilidad.")
+                else:
+                    st.info("No se encontraron datos de implementación MPI en los resultados.")
+            
+            with prime_tabs[2]:
+                st.subheader("Comparación GPU vs Mejor MPI")
+                
+                if "GPU" in df_prime["Implementation"].values and "MPI" in df_prime["Implementation"].values:
+                    comparison_data = []
+                    
+                    for d in unique_ds:
+                        d_data = df_prime[df_prime["D"] == d]
+                        
+                        if "GPU" in d_data["Implementation"].values and "MPI" in d_data["Implementation"].values:
+                            # Obtener tiempo de GPU filtrando valores válidos
+                            gpu_data = d_data[(d_data["Implementation"] == "GPU") & (d_data["Time"] > 0)]
+                            if not gpu_data.empty:
+                                gpu_time = gpu_data["Time"].values[0]
+                                gpu_count = gpu_data["Count"].values[0]
+                                
+                                # Encontrar el mejor tiempo de MPI, filtrando valores válidos
+                                mpi_data = d_data[(d_data["Implementation"] == "MPI") & (d_data["Time"] > 0)]
+                                if not mpi_data.empty:
+                                    best_mpi_idx = mpi_data["Time"].idxmin()
+                                    best_mpi_time = mpi_data.loc[best_mpi_idx]["Time"]
+                                    best_mpi_workers = mpi_data.loc[best_mpi_idx]["Workers"]
+                                    best_mpi_count = mpi_data.loc[best_mpi_idx]["Count"]
                                     
-                                    comparison_data.append({
-                                    "D": d,
-                                    "GPU Time (s)": gpu_time,
-                                    "Best MPI Time (s)": best_mpi_time,
-                                    "Best MPI Workers": str(best_mpi_workers),
-                                    "GPU/MPI Ratio": gpu_mpi_ratio
+                                    # Calcular ratio solo si ambos tiempos son válidos
+                                    if gpu_time > 0 and best_mpi_time > 0:
+                                        gpu_mpi_ratio = gpu_time / best_mpi_time
+                                        
+                                        comparison_data.append({
+                                            "D": d,
+                                            "GPU Time (s)": gpu_time,
+                                            "GPU Count": gpu_count,
+                                            "Best MPI Time (s)": best_mpi_time,
+                                            "Best MPI Count": best_mpi_count,
+                                            "Best MPI Workers": best_mpi_workers,
+                                            "GPU/MPI Ratio": gpu_mpi_ratio
+                                        })
+                    
+                    if comparison_data:
+                        comparison_df = pd.DataFrame(comparison_data)
+                        
+                        # Visualización más interactiva
+                        st.subheader("Tabla Comparativa")
+                        
+                        # Mostrar tabla con datos clave
+                        display_df = comparison_df[["D", "GPU Time (s)", "Best MPI Time (s)", "Best MPI Workers", "GPU/MPI Ratio"]]
+                        display_df = display_df.rename(columns={"Best MPI Workers": "MPI Workers"})
+                        st.dataframe(display_df, use_container_width=True)
+                        
+                        # Visualización gráfica
+                        if len(comparison_df) > 0:
+                            st.subheader("Comparación Visual")
+                            
+                            # Gráfico de barras para comparar tiempos
+                            fig = go.Figure()
+                            
+                            for d in comparison_df["D"]:
+                                row = comparison_df[comparison_df["D"] == d].iloc[0]
+                                
+                                fig.add_trace(go.Bar(
+                                    x=["GPU", "MPI"],
+                                    y=[row["GPU Time (s)"], row["Best MPI Time (s)"]],
+                                    name=f"D={d}",
+                                    text=[f"{row['GPU Time (s)']:.4f}s", f"{row['Best MPI Time (s)']:.4f}s"],
+                                    textposition='auto'
+                                ))
+                            
+                            fig.update_layout(
+                                title="Comparación de Tiempos GPU vs Mejor MPI",
+                                xaxis_title="Implementación",
+                                yaxis_title="Tiempo (s)",
+                                barmode='group',
+                                height=400
+                            )
+                            
+                            st.plotly_chart(fig, use_container_width=True)
+                        
+                        # Análisis de tendencia
+                        if len(comparison_df) > 1:
+                            st.subheader("Análisis de Tendencia")
+                            
+                            # Gráfico de ratios
+                            fig = px.line(
+                                comparison_df, 
+                                x="D", 
+                                y="GPU/MPI Ratio",
+                                markers=True,
+                                title="Ratio GPU/MPI vs Número de Dígitos",
+                                labels={"D": "Número de Dígitos", "GPU/MPI Ratio": "Ratio GPU/MPI"}
+                            )
+                            
+                            # Línea horizontal en y=1 (igual rendimiento)
+                            fig.add_shape(
+                                type="line",
+                                x0=min(comparison_df["D"]), y0=1,
+                                x1=max(comparison_df["D"]), y1=1,
+                                line=dict(color="red", width=2, dash="dash")
+                            )
+                            
+                            fig.update_layout(height=350)
+                            st.plotly_chart(fig, use_container_width=True)
+                            
+                            trend = comparison_df["GPU/MPI Ratio"].values[-1] - comparison_df["GPU/MPI Ratio"].values[0]
+                            
+                            if trend < -0.5:
+                                st.success("🔍 **Análisis**: La GPU se vuelve comparativamente más rápida a medida que aumenta el número de dígitos (el ratio disminuye).")
+                            elif trend > 0.5:
+                                st.info("🔍 **Análisis**: MPI se vuelve comparativamente más rápido a medida que aumenta el número de dígitos (el ratio aumenta).")
+                            else:
+                                st.info("🔍 **Análisis**: La relación entre GPU y MPI se mantiene relativamente estable para diferentes números de dígitos.")
+                            
+                            # Determinar ganador general
+                            gpu_wins = sum(1 for ratio in comparison_df["GPU/MPI Ratio"] if ratio < 1)
+                            mpi_wins = sum(1 for ratio in comparison_df["GPU/MPI Ratio"] if ratio > 1)
+                            
+                            if gpu_wins > mpi_wins:
+                                st.success(f"✅ **Resultado global**: GPU supera a MPI en {gpu_wins} de {len(comparison_df)} casos.")
+                            elif mpi_wins > gpu_wins:
+                                st.success(f"✅ **Resultado global**: MPI supera a GPU en {mpi_wins} de {len(comparison_df)} casos.")
+                            else:
+                                st.info("ℹ️ **Resultado global**: GPU y MPI tienen un rendimiento comparable en general.")
+                    else:
+                        st.info("No hay suficientes datos para la comparación GPU vs MPI.")
+                else:
+                    st.info("Se necesitan datos tanto de GPU como de MPI para realizar la comparación.")
+            
+            with prime_tabs[3]:
+                st.subheader("Análisis de Complejidad Computacional")
+                
+                # Comprobar crecimiento exponencial de conteo de primos
+                if len(unique_ds) > 1 and "Secuencial" in df_prime["Implementation"].values:
+                    seq_data = df_prime[(df_prime["Implementation"] == "Secuencial") & (df_prime["Time"] > 0)].sort_values("D")
+                    
+                    if len(seq_data) > 1:
+                        # Visualización de tiempo vs D
+                        st.subheader("Crecimiento del Tiempo de Ejecución")
+                        
+                        # Gráfico log-log de tiempo vs D para todas las implementaciones
+                        fig = go.Figure()
+                        
+                        # Colores para las implementaciones
+                        colors = {
+                            "Secuencial": "#1f77b4",
+                            "MPI": "#ff7f0e",
+                            "GPU": "#2ca02c"
+                        }
+                        
+                        for impl in df_prime["Implementation"].unique():
+                            impl_data = df_prime[df_prime["Implementation"] == impl]
+                            
+                            if impl == "MPI":
+                                # Usar el mejor tiempo para cada D
+                                best_times = []
+                                for d in unique_ds:
+                                    d_data = impl_data[impl_data["D"] == d]
+                                    if not d_data.empty:
+                                        best_idx = d_data["Time"].idxmin()
+                                        best_times.append({
+                                            "D": d,
+                                            "Time": d_data.loc[best_idx]["Time"],
+                                            "Workers": d_data.loc[best_idx]["Workers"]
+                                        })
+                                
+                                if best_times:
+                                    best_df = pd.DataFrame(best_times).sort_values("D")
+                                    
+                                    fig.add_trace(go.Scatter(
+                                        x=best_df["D"],
+                                        y=best_df["Time"],
+                                        mode='lines+markers',
+                                        name=f"{impl} (mejor)",
+                                        line=dict(color=colors.get(impl, "gray"), width=3),
+                                        marker=dict(size=10)
+                                    ))
+                            else:
+                                # Para otras implementaciones, mostrar todos los puntos
+                                impl_data = impl_data.sort_values("D")
+                                
+                                fig.add_trace(go.Scatter(
+                                    x=impl_data["D"],
+                                    y=impl_data["Time"],
+                                    mode='lines+markers',
+                                    name=impl,
+                                    line=dict(color=colors.get(impl, "gray"), width=3),
+                                    marker=dict(size=10)
+                                ))
+                        
+                        # Configurar ejes logarítmicos
+                        fig.update_layout(
+                            title="Tiempo vs Número de Dígitos (log-log)",
+                            xaxis_title="Número de Dígitos (D)",
+                            yaxis_title="Tiempo (s)",
+                            xaxis_type="log",
+                            yaxis_type="log",
+                            height=450
+                        )
+                        
+                        st.plotly_chart(fig, use_container_width=True)
+                        
+                        # Calcular ratio de crecimiento de tiempo vs números de dígitos
+                        growth_ratios = []
+                        for i in range(1, len(seq_data)):
+                            prev_d = seq_data.iloc[i-1]["D"]
+                            curr_d = seq_data.iloc[i]["D"]
+                            prev_time = seq_data.iloc[i-1]["Time"]
+                            curr_time = seq_data.iloc[i]["Time"]
+                            
+                            # Verificar que los tiempos son válidos
+                            if prev_time > 0 and curr_time > 0:
+                                # Ratio normalizado por incremento en D
+                                growth_ratio = (curr_time / prev_time) / (10**(curr_d - prev_d))
+                                growth_ratios.append({
+                                    "De D": prev_d,
+                                    "A D": curr_d,
+                                    "Ratio": growth_ratio
                                 })
-
+                        
+                        if growth_ratios:  # Verificar que hay datos válidos
+                            growth_df = pd.DataFrame(growth_ratios)
+                            avg_growth = sum(r["Ratio"] for r in growth_ratios) / len(growth_ratios)
+                            
+                            # Mostrar tabla de ratios
+                            col1, col2 = st.columns([1, 1])
+                            
+                            with col1:
+                                st.subheader("Ratios de Crecimiento")
+                                st.dataframe(growth_df, use_container_width=True)
+                            
+                            with col2:
+                                st.subheader("Análisis de Complejidad")
+                                st.metric("Ratio de crecimiento promedio", f"{avg_growth:.5f}")
+                                
+                                if avg_growth < 0.01:
+                                    st.success("✅ El tiempo de ejecución crece mucho más lento que el tamaño del espacio de búsqueda, indicando un algoritmo muy eficiente.")
+                                elif avg_growth < 0.1:
+                                    st.info("ℹ️ El tiempo de ejecución crece significativamente más lento que el tamaño del espacio de búsqueda.")
+                                else:
+                                    st.warning("⚠️ El tiempo de ejecución crece casi proporcionalmente al tamaño del espacio de búsqueda.")
+                                
+                                # Complejidad teórica
+                                st.markdown("""
+                                **Complejidad teórica para verificación de primalidad:**
+                                - Algoritmo ingenuo: O(N)
+                                - Verificación por división de prueba: O(√N)
+                                - Criba de Eratóstenes: O(N log log N)
+                                
+                                Para el rango [10^(D-1), 10^D], el espacio de búsqueda crece exponencialmente con D.
+                                """)
+                    else:
+                        st.info("Se necesitan datos de al menos dos tamaños de dígitos diferentes para analizar la complejidad.")
+                else:
+                    st.info("Se necesitan datos de implementación secuencial para analizar la complejidad computacional.")
                 
-                if comparison_data:
-                    comparison_df = pd.DataFrame(comparison_data)
-                    st.table(comparison_df)
-                    
-                    # Análisis de tendencia
-                    if len(comparison_df) > 1:
-                        trend = comparison_df["GPU/MPI Ratio"].values[-1] - comparison_df["GPU/MPI Ratio"].values[0]
-                        
-                        if trend < 0:
-                            st.success("🔍 Análisis: La GPU se vuelve comparativamente más rápida a medida que aumenta el número de dígitos.")
-                        elif trend > 0:
-                            st.info("🔍 Análisis: MPI se vuelve comparativamente más rápido a medida que aumenta el número de dígitos.")
-                        else:
-                            st.info("🔍 Análisis: La relación entre GPU y MPI se mantiene estable para diferentes números de dígitos.")
-            
-            # Análisis 4: Complejidad computacional
-            st.markdown("### Análisis de Complejidad Computacional")
-            
-            # Comprobar crecimiento exponencial de conteo de primos
-            if len(unique_ds) > 1 and "Secuencial" in df_prime["Implementation"].values:
-                seq_data = df_prime[(df_prime["Implementation"] == "Secuencial") & (df_prime["Time"] > 0)].sort_values("D")
-                
-                if len(seq_data) > 1:
-                    # Calcular ratio de crecimiento de tiempo vs números de dígitos
-                    growth_ratios = []
-                    for i in range(1, len(seq_data)):
-                        prev_d = seq_data.iloc[i-1]["D"]
-                        curr_d = seq_data.iloc[i]["D"]
-                        prev_time = seq_data.iloc[i-1]["Time"]
-                        curr_time = seq_data.iloc[i]["Time"]
-                        
-                        # Verificar que los tiempos son válidos
-                        if prev_time > 0 and curr_time > 0:
-                            # Ratio normalizado por incremento en D
-                            growth_ratio = (curr_time / prev_time) / (10**(curr_d - prev_d))
-                            growth_ratios.append(growth_ratio)
-                    
-                    if growth_ratios:  # Verificar que hay datos válidos
-                        avg_growth = sum(growth_ratios) / len(growth_ratios)
-                        
-                        st.markdown(f"**Ratio de crecimiento promedio (normalizado): {avg_growth:.5f}**")
-                        
-                        if avg_growth < 0.01:
-                            st.success("El tiempo de ejecución crece mucho más lento que el tamaño del espacio de búsqueda, indicando un algoritmo muy eficiente.")
-                        elif avg_growth < 0.1:
-                            st.info("El tiempo de ejecución crece significativamente más lento que el tamaño del espacio de búsqueda.")
-                        else:
-                            st.warning("El tiempo de ejecución crece casi proporcionalmente al tamaño del espacio de búsqueda.")
-        
     else:
         st.info("No hay resultados disponibles para analizar. Ejecute pruebas en la pestaña 'Ejecutar Pruebas' o genere datos simulados desde el panel lateral.")
 
