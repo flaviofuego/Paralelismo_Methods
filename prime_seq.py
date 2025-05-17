@@ -41,11 +41,12 @@ def count_primes_in_range(start, end):
     Returns:
         int: Count of prime numbers in range
     """
-    count = 0
-    for num in range(start, end + 1):
-        if is_prime(num):
-            count += 1
-    return count
+    #count = 0
+    #for num in range(start, end + 1):
+    #    if is_prime(num):
+    #        count += 1
+    #return count
+    return sum(1 for num in range(start, end + 1) if is_prime(num))
 
 def main():
     # Check command line arguments
