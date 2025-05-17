@@ -1,0 +1,13 @@
+[project]
+name = "paralelismo_methods"
+version = "0.1.0"
+description = "Project for parallel programming methods in Python"
+authors = [{ name = "Cristian" }, { name = "Flavio" }]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "streamlit",
+  "plotly",
+  "matplotlib",
+  "mpi4py"
+]

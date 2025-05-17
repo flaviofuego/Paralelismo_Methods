@@ -41,8 +41,8 @@ def main():
     
     # Generate random matrices
     np.random.seed(42)  # For reproducibility
-    A = np.random.random((N, N))
-    B = np.random.random((N, N))
+    A = np.random.uniform(0, 1, (N, N))
+    B = np.random.uniform(0, 1, (N, N))
     
     # Time the multiplication
     start_time = time.time()
