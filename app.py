@@ -269,7 +269,7 @@ def run_matrix_gpu(N):
 def run_prime_sequential(D):
     try:
         cmd = f"python prime_seq.py {D}"
-        output = subprocess.check_output(cmd, shell=True).decode('cp1252')
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('cp1252')
         
         # Intenta extraer el tiempo y conteo del formato esperado
         try:
@@ -314,13 +314,13 @@ def run_prime_sequential(D):
         
         # Estimar tiempo basado en D (crecimiento exponencial)
         if D <= 2:
-            time_taken = 0.0002
+            time_taken = 0.0003
         elif D == 3:
-            time_taken = 0.001
+            time_taken = 0.002
         elif D == 4:
-            time_taken = 0.01
+            time_taken = 0.009
         else:
-            time_taken = 0.1 * (10**(D-4))  # Crecimiento exponencial para D > 4
+            time_taken = 0.009 * (10**(D-4))  # Crecimiento exponencial para D > 4
             
         st.warning(f"Usando valores simulados para D={D}: {count} primos en {time_taken:.6f} segundos")
         return count, time_taken
@@ -2150,7 +2150,8 @@ with tab2:
                 
         else:
             st.info("No hay resultados disponibles. Ejecute pruebas en la pestaña 'Ejecutar Pruebas' o genere datos simulados desde el panel lateral.")
-
+    else:
+        st.info("No hay resultados disponibles. Ejecute pruebas en la pestaña 'Ejecutar Pruebas' o genere datos simulados desde el panel lateral.")
 # Pestaña 3: Análisis
 with tab3:
     st.header("Análisis Automático")
