@@ -77,7 +77,7 @@ def main():
     
     # Record start time (only on rank 0)
     if rank == 0:
-        start_time = time.time()
+        start_time = time.perf_counter()
     
     # Calculate numbers per process
     total_numbers = end_range - start_range + 1
@@ -102,7 +102,7 @@ def main():
     
     # Record end time and print results (only on rank 0)
     if rank == 0:
-        end_time = time.time()
+        end_time = time.perf_counter()
         execution_time = end_time - start_time
         
         # Verify with known results for small values of D

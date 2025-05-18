@@ -35,7 +35,7 @@ def main():
         B = np.random.random((N, N))
         
         # Record start time
-        start_time = time.time()
+        start_time = time.perf_counter()
     else:
         A = None
         B = None
@@ -105,7 +105,7 @@ def main():
             C[r_offset:r_offset+r_rows] = recv_buffer
         
         # Record end time and calculate execution time
-        end_time = time.time()
+        end_time = time.perf_counter()
         execution_time = end_time - start_time
         
         # Verify result for small matrices (optional validation)

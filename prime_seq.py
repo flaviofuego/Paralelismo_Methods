@@ -67,9 +67,11 @@ def main():
     end_range = 10**D - 1
     
     # Time the computation
-    start_time = time.time()
+    start_time = time.perf_counter()
+    
     count = count_primes_in_range(start_range, end_range)
-    end_time = time.time()
+    
+    end_time = time.perf_counter()
     
     execution_time = end_time - start_time
     

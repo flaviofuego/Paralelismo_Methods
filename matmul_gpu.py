@@ -31,7 +31,7 @@ def main():
     B_cpu = np.random.random((N, N)).astype(np.float32)
     
     # Record start time
-    start_time = time.time()
+    start_time = time.perf_counter()
     
     if has_gpu:
         # Transfer data to GPU
@@ -40,14 +40,14 @@ def main():
         
         # Ensure data transfer is complete before timing the computation
         cp.cuda.Stream.null.synchronize()
-        computation_start = time.time()
+        computation_start = time.perf_counter()
         
         # Perform matrix multiplication on GPU
         C_gpu = cp.matmul(A_gpu, B_gpu)
         
         # Ensure computation is complete
         cp.cuda.Stream.null.synchronize()
-        computation_end = time.time()
+        computation_end = time.perf_counter()
         
         # Transfer result back to CPU (if needed for validation)
         if N <= 10:  # Only transfer for small matrices to validate
@@ -57,7 +57,7 @@ def main():
             print(f"Maximum error compared to NumPy: {error:.6e}")
         
         # Calculate time spent on data transfer
-        transfer_time = (computation_start - start_time) + (time.time() - computation_end)
+        transfer_time = (computation_start - start_time) + (time.perf_counter() - computation_end)
         computation_time = computation_end - computation_start
         
         if N <= 100:  # Print detailed timing only for smaller matrices
@@ -65,9 +65,10 @@ def main():
             print(f"Computation time: {computation_time:.6f} seconds")
     else:
         # Simulate GPU with optimized NumPy (will be slower than real GPU)
+        print("Simulating GPU with NumPy...")
         C_cpu = np.dot(A_cpu, B_cpu)
     
-    end_time = time.time()
+    end_time = time.perf_counter()
     execution_time = end_time - start_time
     
     print(f"Tiempo de ejecución GPU para N={N}: {execution_time:.6f} segundos")

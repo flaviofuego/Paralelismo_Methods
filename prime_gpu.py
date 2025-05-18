@@ -39,7 +39,7 @@ def main():
             print("Warning: Neither CuPy nor Numba found. Using CPU implementation.")
     
     # Record start time
-    start_time = time.time()
+    start_time = time.perf_counter()
     
     if has_cupy:
         try:
@@ -51,12 +51,9 @@ def main():
             
             # Define CUDA kernel for prime checking
             # Adding necessary include directives for the CUDA code
-            cuda_code = r'''
-            #include <stdint.h>
-            #include <math.h>
-            
+            cuda_code = r"""
             extern "C" __global__
-            void check_primes(const long long* numbers, int8_t* is_prime, int n) {
+            void check_primes(const long long* numbers, char* is_prime, int n) {
                 int idx = blockDim.x * blockIdx.x + threadIdx.x;
                 if (idx < n) {
                     long long num = numbers[idx];
@@ -75,19 +72,20 @@ def main():
                         return;
                     }
                     
-                    long long sqrt_num = sqrt((double)num) + 1;
-                    
-                    for (long long i = 5; i <= sqrt_num; i += 6) {
+                    long long i = 5;
+                    // Reemplazar sqrt() por una comparación equivalente
+                    while (i * i <= num) {
                         if (num % i == 0 || num % (i + 2) == 0) {
                             is_prime[idx] = 0;
                             return;
                         }
+                        i += 6;
                     }
                     
                     is_prime[idx] = 1;
                 }
             }
-            '''
+            """
             
             # Compile and launch kernel
             module = cp.RawModule(code=cuda_code)
@@ -158,7 +156,7 @@ def main():
         count = count_primes_cpu(start_range, end_range)
     
     # Record end time
-    end_time = time.time()
+    end_time = time.perf_counter()
     execution_time = end_time - start_time
     
     # Verify with known results for small values of D

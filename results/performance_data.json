@@ -1,1 +1,231 @@
-{"matrix": [{"N": 100, "Implementation": "Secuencial", "Workers": 1, "Time": 0.287951, "Timestamp": 1747539427.3411992}, {"N": 500, "Implementation": "Secuencial", "Workers": 1, "Time": 37.052704, "Timestamp": 1747539464.6145887}, {"N": 100, "Implementation": "MPI", "Workers": 2, "Time": 0.158308, "Timestamp": 1747539465.1360219}, {"N": 100, "Implementation": "MPI", "Workers": 4, "Time": 0.132723, "Timestamp": 1747539465.6495843}, {"N": 500, "Implementation": "MPI", "Workers": 2, "Time": 18.989718, "Timestamp": 1747539484.9518678}, {"N": 500, "Implementation": "MPI", "Workers": 4, "Time": 10.149309, "Timestamp": 1747539495.4099686}, {"N": 100, "Implementation": "GPU", "Workers": 1, "Time": 0.292967, "Timestamp": 1747539500.0587807}, {"N": 500, "Implementation": "GPU", "Workers": 1, "Time": 0.108506, "Timestamp": 1747539500.9058325}], "prime": [{"D": 2, "Implementation": "MPI", "Workers": 2, "Count": 21, "Time": 0.001656, "Timestamp": 1747539501.2080474}, {"D": 2, "Implementation": "MPI", "Workers": 4, "Count": 21, "Time": 0.000506, "Timestamp": 1747539501.36191}, {"D": 3, "Implementation": "MPI", "Workers": 2, "Count": 143, "Time": 0.001, "Timestamp": 1747539501.506153}, {"D": 3, "Implementation": "MPI", "Workers": 4, "Count": 143, "Time": 0.001508, "Timestamp": 1747539501.6559913}, {"D": 2, "Implementation": "GPU", "Workers": 1, "Count": 21, "Time": 0.709259, "Timestamp": 1747539503.1302683}, {"D": 3, "Implementation": "GPU", "Workers": 1, "Count": 143, "Time": 0.243003, "Timestamp": 1747539504.0954242}]}
+{
+    "matrix": [
+        {
+            "N": 100,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Time": 0.305142,
+            "Timestamp": 1747541838.3059516
+        },
+        {
+            "N": 500,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Time": 36.508997,
+            "Timestamp": 1747541875.0312378
+        },
+        {
+            "N": 200,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Time": 2.351326,
+            "Timestamp": 1747541877.6002975
+        },
+        {
+            "N": 100,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Time": 0.151304,
+            "Timestamp": 1747541878.0216236
+        },
+        {
+            "N": 100,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Time": 0.078669,
+            "Timestamp": 1747541878.38794
+        },
+        {
+            "N": 100,
+            "Implementation": "MPI",
+            "Workers": 8,
+            "Time": 0.061122,
+            "Timestamp": 1747541878.8121502
+        },
+        {
+            "N": 500,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Time": 18.382851,
+            "Timestamp": 1747541897.467354
+        },
+        {
+            "N": 500,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Time": 9.65658,
+            "Timestamp": 1747541907.4201853
+        },
+        {
+            "N": 500,
+            "Implementation": "MPI",
+            "Workers": 8,
+            "Time": 6.082307,
+            "Timestamp": 1747541913.8688266
+        },
+        {
+            "N": 200,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Time": 1.196095,
+            "Timestamp": 1747541915.3367605
+        },
+        {
+            "N": 200,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Time": 0.63565,
+            "Timestamp": 1747541916.2650812
+        },
+        {
+            "N": 200,
+            "Implementation": "MPI",
+            "Workers": 8,
+            "Time": 0.4177,
+            "Timestamp": 1747541917.0374126
+        },
+        {
+            "N": 100,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Time": 0.11905,
+            "Timestamp": 1747541917.8890414
+        },
+        {
+            "N": 500,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Time": 0.106219,
+            "Timestamp": 1747541918.7087572
+        },
+        {
+            "N": 200,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Time": 0.102119,
+            "Timestamp": 1747541919.5380917
+        }
+    ],
+    "prime": [
+        {
+            "D": 2,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Count": 21,
+            "Time": 2.6e-05,
+            "Timestamp": 1747541919.604728
+        },
+        {
+            "D": 3,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Count": 143,
+            "Time": 0.000199,
+            "Timestamp": 1747541919.6720202
+        },
+        {
+            "D": 4,
+            "Implementation": "Secuencial",
+            "Workers": 1,
+            "Count": 1061,
+            "Time": 0.003263,
+            "Timestamp": 1747541919.7476335
+        },
+        {
+            "D": 2,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Count": 21,
+            "Time": 0.000382,
+            "Timestamp": 1747541919.8852472
+        },
+        {
+            "D": 2,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Count": 21,
+            "Time": 0.00069,
+            "Timestamp": 1747541920.0283678
+        },
+        {
+            "D": 2,
+            "Implementation": "MPI",
+            "Workers": 8,
+            "Count": 21,
+            "Time": 0.000961,
+            "Timestamp": 1747541920.2054026
+        },
+        {
+            "D": 3,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Count": 143,
+            "Time": 0.000535,
+            "Timestamp": 1747541920.3360105
+        },
+        {
+            "D": 3,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Count": 143,
+            "Time": 0.000822,
+            "Timestamp": 1747541920.4776676
+        },
+        {
+            "D": 3,
+            "Implementation": "MPI",
+            "Workers": 8,
+            "Count": 143,
+            "Time": 0.001095,
+            "Timestamp": 1747541920.7359397
+        },
+        {
+            "D": 4,
+            "Implementation": "MPI",
+            "Workers": 2,
+            "Count": 1061,
+            "Time": 0.001608,
+            "Timestamp": 1747541920.8703606
+        },
+        {
+            "D": 4,
+            "Implementation": "MPI",
+            "Workers": 4,
+            "Count": 1061,
+            "Time": 0.00123,
+            "Timestamp": 1747541921.0158827
+        },
+        {
+            "D": 4,
+            "Implementation": "MPI",
+            "Workers": 8,
+            "Count": 1061,
+            "Time": 0.00171,
+            "Timestamp": 1747541921.188936
+        },
+        {
+            "D": 2,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Count": 21,
+            "Time": 0.196962,
+            "Timestamp": 1747541922.0702238
+        },
+        {
+            "D": 3,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Count": 143,
+            "Time": 0.176912,
+            "Timestamp": 1747541923.008791
+        },
+        {
+            "D": 4,
+            "Implementation": "GPU",
+            "Workers": 1,
+            "Count": 1061,
+            "Time": 0.169917,
+            "Timestamp": 1747541923.86547
+        }
+    ]
+}

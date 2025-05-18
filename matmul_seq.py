@@ -45,7 +45,7 @@ def main():
     B = np.random.uniform(0, 1, (N, N))
     
     # Time the multiplication
-    start_time = time.time()
+    start_time = time.perf_counter()
     
     # For very large matrices, use numpy's optimized multiplication to avoid excessive runtime
     if N > 1000:
@@ -54,7 +54,7 @@ def main():
         # Use our own implementation to ensure correctness is demonstrated
         C = matrix_multiply_sequential(A, B)
     
-    end_time = time.time()
+    end_time = time.perf_counter()
     execution_time = end_time - start_time
     
     # Verify result for small matrices (optional validation)

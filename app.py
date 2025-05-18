@@ -270,7 +270,7 @@ def run_prime_sequential(D):
     try:
         cmd = f"python prime_seq.py {D}"
         output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode('cp1252')
-        
+        print(f"Ejecutando: {output}")  # Para depuración
         # Intenta extraer el tiempo y conteo del formato esperado
         try:
             time_parts = output.split("Tiempo de ejecución secuencial:")
