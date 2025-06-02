@@ -45,7 +45,7 @@ pip install numba         # Alternative GPU acceleration
 
 ## Project Structure
 
-```
+```plaintext
 .
 ├── app.py                 # Interactive Streamlit analysis application
 ├── matmul_seq.py          # Sequential matrix multiplication
@@ -128,7 +128,7 @@ The implementations follow standard matrix multiplication:
 
 ### Prime Number Counting
 
-The implementations count primes in the range [10^(D-1), 10^D - 1]:
+The implementations count primes in the range $[10^(D-1), 10^D - 1]$:
 - **Sequential**: Trial division algorithm optimized with early cutoffs
 - **MPI**: Range partitioning among processes for distributed counting
 - **GPU**: Parallel primality testing across thousands of GPU threads
@@ -155,10 +155,6 @@ The application calculates several key metrics:
 2. **Efficiency**: Speedup divided by the number of processors
 3. **Scalability**: How performance changes with increasing worker count
 
-These metrics offer insights into:
-- The effectiveness of parallelization
-- Communication and synchronization overheads
-- Problem size thresholds where parallelization becomes beneficial
 
 ## Troubleshooting
 
@@ -175,17 +171,3 @@ These metrics offer insights into:
 ### Application Issues
 - For timing precision issues with very fast operations, try larger problem sizes
 - If visualizations don't appear, check Streamlit version compatibility
-
-## Educational Value
-
-This project demonstrates key parallel computing concepts:
-- Amdahl's Law and its practical implications
-- Communication overhead vs. computational benefit
-- Problem size thresholds for effective parallelization
-- Trade-offs between different parallel programming paradigms
-
-By comparing the performance across different implementations and problem sizes, you can develop intuition about when and how to leverage parallelism in computational workloads.
-
-## License
-
-This project is provided for educational purposes as part of the Computer Structure II (Estructura del Computador II) course.
