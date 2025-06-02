@@ -128,7 +128,7 @@ The implementations follow standard matrix multiplication:
 
 ### Prime Number Counting
 
-The implementations count primes in the range $$[10^(D-1), 10^D - 1]$$:
+The implementations count primes in the range [10^(D-1), 10^D - 1]:
 - **Sequential**: Trial division algorithm optimized with early cutoffs
 - **MPI**: Range partitioning among processes for distributed counting
 - **GPU**: Parallel primality testing across thousands of GPU threads
